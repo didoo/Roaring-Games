@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+  body {
+      padding: 1em 2em;
+      font-family: Mathlete-Bulky;
+      text-align: center;
+      color: white;
+      background: #232427;
+  }
+  h1 {
+    font-size: 10vw;
+    line-height: 0.4em;
+    color: #00bcd4;
+  }
+  h1 span {
+    padding-bottom: 4px;
+    border-bottom: 5px solid currentColor;
+  }
+  .game {
+  }
+  .multiplication {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    margin: 5vw auto;
+    color: orange;
+  }
+
+  .question {
+    flex: 0 0 40vw;
+    font-size: 20vw;
+    line-height: 1em;
+    margin-bottom: 5vw;
+  }
+
+  .equal {
+    font-family: sans;
+    font-size: 10vw;
+    line-height: 1em;
+    flex: 0 0 12vw;
+  }
+
+  .answer {
+    flex: 0 0 22vw;
+    width: 22vw;
+    height: 18vw;
+    padding-bottom: 4vw;
+    font-family: Mathlete-Bulky;
+    font-size: 20vw;
+    text-align: center;
+    background: #ffc107;
+    border: none;
+  }
+  .check {
+    flex: 0 0 12vw;
+    padding-left: 2vw;
+    font-size: 12vw;
+    text-align: center;
+    background: transparent;
+    border: none;
+    -webkit-appearance: none;
+    outline: none;
+  }
+
+  .results {
+    flex: 1 0 100%;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    list-style-type: none;
+    border: 3px solid #42a5f5;
+  }
+
+  .loader {
+    position: relative;
+    width: 100%;
+    height: 5vw;
+    overflow: hidden;
+    text-align: left;
+    visibility: hidden;
+  }
+
+  @keyframes turtlemove {
+      0% {
+        transform: translate3d(0,0,0);
+      }
+      100% {
+        transform: translate3d(100%,0,0);
+      }
+  }
+
+  .loader::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    content: '🐢';
+    display: block;
+    transform: scaleX(-1);
+    font-size: 5vw;
+    line-height: 1em;
+  }
+
+  .loader.moving {
+    visibility: visible;
+    animation: turtlemove 1s linear forwards;
+  }
+
+  .results:empty {
+    display: none;
+  }
+
+  .results li {
+    position: relative;
+    flex: 0 0 8.3%;
+    margin: 20px 0;
+    font-size: 12px;
+    counter-increment: goal-counter;
+  }
+
+  .results li::before {
+      content: counter(goal-counter);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      color: #fff;
+      transform: translate(0,-50%);
+  }
+
+  .results li span {
+    font-size: 4vw;
+  }
+
+  .prize {}
+
+  .prize .bad img {
+    width: 40vw;
+  }
+
+  .prize .video, .prize .gif, .prize .bad { display: none; }
+  .prize.is-video .video, .prize.is-gif .gif, .prize.is-bad .bad { display: block; }
+
+  </style>
+</head>
+<body>
+  <h1>🐯 <span>Tiger times Tiger</span> 🐯</h1>
+  <div class="game">
+    <div class="multiplication">
+      <div class="question">? × ?</div>
+      <div class="equal">=</div>
+      <input class="answer" type="text" value="" />
+      <input class="check" type="button" value="👍" />
+    </div>
+    <div class="loader"></div>
+    <ol class="results"></ol>
+    <div class="prize">
+      <div class="video">
+        <div class="catvideo"></div>
+      </div>
+      <div class="gif">
+        <img class="catgif" src="" alt="" />
+      </div>
+      <div class="bad">
+        <img src="http://applenapps.com/wp-content/uploads/2013/06/dumb_ways_to_die2.jpg" alt="">
+      </div>
+    </div>
+  </div>
+  <script>
+    var number1;
+    var number2;
+    var counter;
+
+    var init = function() {
+      counter = 0;
+      success = 0;
+      document.querySelector('.results').innerHTML = "";
+      question();
+    }
+
+    var question = function() {
+        number1 = Math.ceil(Math.random()*12);
+        number2 = Math.ceil(Math.random()*12);
+        document.querySelector('.loader').classList.remove('moving');
+        document.querySelector('.question').innerText = number1 + " × " + number2;
+        document.querySelector('.answer').value = "";
+        document.querySelector('.answer').readOnly = false;
+        document.querySelector('.answer').focus();
+    }
+
+    var showvideo = function() {
+      document.querySelector('.prize').className = "prize is-video";
+
+      var videos = [
+        'pRpvdcjkT3k',
+        'Te4wx4jtiEA',
+        'efTj6UYzvk4',
+        'cR0v4gV5ozU'
+      ];
+      var index = Math.floor(Math.random() * videos.length);
+      document.querySelector('.catvideo').innerHTML = '<iframe width="720" height="480"   src="http://www.youtube.com/embed/' + videos[index] + '?autoplay=1" frameborder="0" allowfullscreen></iframe>';
+    }
+
+    var showgif = function() {
+      document.querySelector('.prize').className = "prize is-gif";
+
+      request = new XMLHttpRequest;
+      request.open('GET', 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny+cat', true);
+
+      request.onload = function() {
+          if (request.status >= 200 && request.status < 400){
+              data = JSON.parse(request.responseText).data.image_url;
+              console.log(data);
+              document.querySelector(".catgif").src = data;
+          } else {
+              console.log('reached giphy, but API returned an error');
+           }
+      };
+
+      request.onerror = function() {
+          console.log('connection error');
+      };
+
+      request.send();
+    }
+
+    var showbad = function() {
+      document.querySelector('.prize').className = "prize is-bad";
+    }
+
+    var test = function() {
+      document.querySelector('.answer').readOnly = true;
+      response = document.querySelector('.answer').value;
+      var goal = document.createElement("li");
+        if(response == number1*number2) {
+          goal.innerHTML = "<span>🐯<span>";
+          success++;
+        } else {
+          goal.innerHTML = "<span>☠<span>";
+        }
+        counter++;
+        document.querySelector('.results').appendChild(goal);
+        if(counter==12) {
+          if(success==12) {
+            showvideo();
+          } else if (success>=10) {
+            showgif();
+          } else {
+            showbad();
+            init();
+          }
+        } else {
+          document.querySelector('.loader').classList.add('moving');
+          window.setTimeout(function() {
+            question();
+          }, 1000);
+        }
+        return false;
+    };
+
+    document.querySelector('.answer').onkeypress = function(e){
+      // var keyCode = e.keyCode || e.which;
+      if (e.keyCode == '13') {
+        test();
+      }
+    }
+
+    document.querySelector('.check').onclick = test;
+    init();
+  </script>
+</body>
+</html>
