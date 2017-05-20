@@ -26,12 +26,12 @@
     line-height: 1em;
     color: #00bcd4;
   }
+
   h1 span {
     padding-bottom: 4px;
     border-bottom: 5px solid currentColor;
   }
-  .game {
-  }
+
   .multiplication {
     display: flex;
     flex-direction: row;
@@ -41,6 +41,11 @@
     height: auto;
     margin: 5vw auto;
     color: orange;
+  }
+
+  .game.welcome .multiplication,
+  .game.gameover .multiplication {
+    display: none;
   }
 
   .question {
@@ -68,6 +73,7 @@
     background: #ffc107;
     border: none;
   }
+
   .check {
     flex: 0 0 12vw;
     padding-left: 2vw;
@@ -85,6 +91,10 @@
     display: block;
     overflow: hidden;
     border: 3px solid #42a5f5;
+  }
+
+  .game.welcome .statusbar {
+    display: none;
   }
 
   .loader {
@@ -163,7 +173,14 @@
     transform: translateY(-80px);
   }
 
-  .prize {}
+  .prize {
+    display: none;
+    margin-top: 4vw;
+  }
+
+  .game.gameover .prize {
+    display: block;
+  }
 
   .prize .bad img {
     width: 40vw;
@@ -172,11 +189,26 @@
   .prize .good, .prize .bad { display: none; }
   .prize.is-good .good, .prize.is-bad .bad { display: block; }
 
+  .start {
+    display: none;
+    margin: 0 auto;
+    font-size: 12vw;
+    background: transparent;
+    border: none;
+    -webkit-appearance: none;
+    outline: none;
+  }
+
+  .game.welcome .start,
+  .game.gameover .start {
+    display: block;
+  }
+
   </style>
 </head>
 <body>
   <h1>🐯 <span>Tiger times Tiger</span> 🐯</h1>
-  <div class="game">
+  <div class="game welcome">
     <div class="multiplication">
       <div class="question">? × ?</div>
       <div class="equal">=</div>
@@ -195,6 +227,7 @@
         <img src="http://applenapps.com/wp-content/uploads/2013/06/dumb_ways_to_die2.jpg" alt="">
       </div>
     </div>
+    <input class="start" type="button" value="🏁" />
   </div>
   <script>
     var number1;
@@ -205,7 +238,8 @@
     var init = function() {
       counter = 0;
       success = 0;
-      document.querySelector('.results').innerHTML = "";
+      document.querySelector('.results').innerHTML = '';
+      document.querySelector('.game').classList.remove('welcome','gameover');
       question();
     }
 
@@ -213,8 +247,8 @@
         number1 = Math.ceil(Math.random()*11);
         number2 = Math.ceil(Math.random()*11);
         document.querySelector('.loader').classList.remove('moving');
-        document.querySelector('.question').innerText = number1 + " × " + number2;
-        document.querySelector('.answer').value = "";
+        document.querySelector('.question').innerText = number1 + ' × ' + number2;
+        document.querySelector('.answer').value = '';
         document.querySelector('.answer').readOnly = false;
         document.querySelector('.answer').focus();
         document.querySelector('.loader').classList.add('moving');
@@ -225,7 +259,7 @@
     }
 
     var showgood = function() {
-      document.querySelector('.prize').className = "prize is-good";
+      document.querySelector('.prize').className = 'prize is-good';
 
       request = new XMLHttpRequest;
       request.open('GET', 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny+cat', true);
@@ -234,7 +268,7 @@
           if (request.status >= 200 && request.status < 400){
               data = JSON.parse(request.responseText).data.image_url;
               console.log(data);
-              document.querySelector(".catgif").src = data;
+              document.querySelector('.catgif').src = data;
           } else {
               console.log('reached giphy, but API returned an error');
            }
@@ -248,7 +282,7 @@
     }
 
     var showbad = function() {
-      document.querySelector('.prize').className = "prize is-bad";
+      document.querySelector('.prize').className = 'prize is-bad';
     }
 
     var test = function() {
@@ -257,11 +291,12 @@
       document.querySelector('.loader').classList.remove('moving');
       document.querySelector('.answer').readOnly = true;
       response = document.querySelector('.answer').value;
-      var goal = document.createElement("li");
+      var goal = document.createElement('li');
       goal.classList.add('hidden');
-      if(response == number1*number2) {
-        goal.innerHTML = '<span>🐯<span>';
+      var pass = (response == number1*number2);
+      if(pass) {
         success++;
+        goal.innerHTML = '<span>🐯<span>';
       } else {
         goal.innerHTML = '<span>☠<span>';
       }
@@ -275,12 +310,12 @@
             showgood();
           } else {
             showbad();
-            init();
           }
+          document.querySelector('.game').classList.add('gameover');
         } else {
           question();
         }
-      }, 1000);
+      }, pass ? 10 : 2000);
       return false;
     };
 
@@ -291,7 +326,9 @@
     }
 
     document.querySelector('.check').onclick = test;
-    init();
+
+    document.querySelector('.start').onclick = init;
+
   </script>
 </body>
 </html>
