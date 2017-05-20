@@ -9,6 +9,9 @@
     font-weight: normal;
     font-style: normal;
   }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
   body {
       padding: 1em 2em;
       font-family: Mathlete-Bulky, sans;
@@ -17,9 +20,10 @@
       background: #232427;
   }
   h1 {
+    margin: 2vw auto 6vw;
     font-size: 10vw;
     font-weight: normal;
-    line-height: 0.4em;
+    line-height: 1em;
     color: #00bcd4;
   }
   h1 span {
@@ -144,7 +148,7 @@
   .results li::before {
       content: counter(goal-counter);
       position: absolute;
-      top: 105%;
+      top: 110%;
       left: 50%;
       color: #fff;
       transform: translate(0,-50%);
@@ -165,8 +169,8 @@
     width: 40vw;
   }
 
-  .prize .video, .prize .gif, .prize .bad { display: none; }
-  .prize.is-video .video, .prize.is-gif .gif, .prize.is-bad .bad { display: block; }
+  .prize .good, .prize .bad { display: none; }
+  .prize.is-good .good, .prize.is-bad .bad { display: block; }
 
   </style>
 </head>
@@ -184,10 +188,7 @@
       <ol class="results"></ol>
     </div>
     <div class="prize">
-      <div class="video">
-        <div class="catvideo"></div>
-      </div>
-      <div class="gif">
+      <div class="good">
         <img class="catgif" src="" alt="" />
       </div>
       <div class="bad">
@@ -209,8 +210,8 @@
     }
 
     var question = function() {
-        number1 = Math.ceil(Math.random()*12);
-        number2 = Math.ceil(Math.random()*12);
+        number1 = Math.ceil(Math.random()*11);
+        number2 = Math.ceil(Math.random()*11);
         document.querySelector('.loader').classList.remove('moving');
         document.querySelector('.question').innerText = number1 + " × " + number2;
         document.querySelector('.answer').value = "";
@@ -220,24 +221,11 @@
         timeout = setTimeout(function() {
           document.querySelector('.check').click();
           clearTimeout(timeout);
-        }, 10000);
+        }, 15000);
     }
 
-    var showvideo = function() {
-      document.querySelector('.prize').className = "prize is-video";
-
-      var videos = [
-        'pRpvdcjkT3k',
-        'Te4wx4jtiEA',
-        'efTj6UYzvk4',
-        'cR0v4gV5ozU'
-      ];
-      var index = Math.floor(Math.random() * videos.length);
-      document.querySelector('.catvideo').innerHTML = '<iframe width="720" height="480"   src="http://www.youtube.com/embed/' + videos[index] + '?autoplay=1" frameborder="0" allowfullscreen></iframe>';
-    }
-
-    var showgif = function() {
-      document.querySelector('.prize').className = "prize is-gif";
+    var showgood = function() {
+      document.querySelector('.prize').className = "prize is-good";
 
       request = new XMLHttpRequest;
       request.open('GET', 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny+cat', true);
@@ -283,10 +271,8 @@
       }, 10);
       window.setTimeout(function() {
         if(counter==12) {
-          if(success==12) {
-            showvideo();
-          } else if (success>=10) {
-            showgif();
+          if(success>=11) {
+            showgood();
           } else {
             showbad();
             init();
@@ -299,7 +285,6 @@
     };
 
     document.querySelector('.answer').onkeypress = function(e){
-      // var keyCode = e.keyCode || e.which;
       if (e.keyCode == '13') {
         test();
       }
