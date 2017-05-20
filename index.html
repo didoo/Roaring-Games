@@ -75,27 +75,26 @@
     outline: none;
   }
 
-  .results {
-    flex: 1 0 100%;
+  .statusbar {
+    position: relative;
     width: 100%;
-    padding: 0;
-    display: flex;
-    list-style-type: none;
+    display: block;
+    overflow: hidden;
     border: 3px solid #42a5f5;
   }
 
   .loader {
-    position: relative;
+    position: absolute;
+    z-index: 10;
     width: 100%;
-    height: 5vw;
-    overflow: hidden;
+    height: 100%;
     text-align: left;
     visibility: hidden;
   }
 
   @keyframes turtlemove {
       0% {
-        transform: translate3d(0,0,0);
+        transform: translate3d(-5%,0,0);
       }
       100% {
         transform: translate3d(100%,0,0);
@@ -106,20 +105,29 @@
     position: absolute;
     top: 0;
     bottom: 0;
+    width: 40px;
+    height: 40px;
+    margin: auto;
     content: '🐢';
     display: block;
     transform: scaleX(-1);
-    font-size: 5vw;
+    font-size: 6vw;
     line-height: 1em;
   }
 
   .loader.moving {
     visibility: visible;
-    animation: turtlemove 1s linear forwards;
+    animation: turtlemove 10s linear forwards;
   }
 
-  .results:empty {
-    display: none;
+  .results {
+    flex: 1 0 100%;
+    width: 100%;
+    height: 80px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style-type: none;
   }
 
   .results li {
@@ -128,19 +136,27 @@
     margin: 20px 0;
     font-size: 12px;
     counter-increment: goal-counter;
+    transform: translateY(0);
+    will-change: transform;
+    transition: transform 0.2s ease-in-out;
   }
 
   .results li::before {
       content: counter(goal-counter);
       position: absolute;
-      top: 100%;
+      top: 105%;
       left: 50%;
       color: #fff;
       transform: translate(0,-50%);
   }
 
   .results li span {
+    display: block;
     font-size: 4vw;
+  }
+
+  .results li.hidden {
+    transform: translateY(-80px);
   }
 
   .prize {}
@@ -163,8 +179,10 @@
       <input class="answer" type="text" value="" />
       <input class="check" type="button" value="👍" />
     </div>
-    <div class="loader"></div>
-    <ol class="results"></ol>
+    <div class="statusbar">
+      <div class="loader"></div>
+      <ol class="results"></ol>
+    </div>
     <div class="prize">
       <div class="video">
         <div class="catvideo"></div>
@@ -181,6 +199,7 @@
     var number1;
     var number2;
     var counter;
+    var timeout;
 
     var init = function() {
       counter = 0;
@@ -197,6 +216,11 @@
         document.querySelector('.answer').value = "";
         document.querySelector('.answer').readOnly = false;
         document.querySelector('.answer').focus();
+        document.querySelector('.loader').classList.add('moving');
+        timeout = setTimeout(function() {
+          document.querySelector('.check').click();
+          clearTimeout(timeout);
+        }, 10000);
     }
 
     var showvideo = function() {
@@ -240,17 +264,24 @@
     }
 
     var test = function() {
+      counter++;
+      clearTimeout(timeout);
+      document.querySelector('.loader').classList.remove('moving');
       document.querySelector('.answer').readOnly = true;
       response = document.querySelector('.answer').value;
       var goal = document.createElement("li");
-        if(response == number1*number2) {
-          goal.innerHTML = "<span>🐯<span>";
-          success++;
-        } else {
-          goal.innerHTML = "<span>☠<span>";
-        }
-        counter++;
-        document.querySelector('.results').appendChild(goal);
+      goal.classList.add('hidden');
+      if(response == number1*number2) {
+        goal.innerHTML = '<span>🐯<span>';
+        success++;
+      } else {
+        goal.innerHTML = '<span>☠<span>';
+      }
+      document.querySelector('.results').appendChild(goal);
+      window.setTimeout(function() {
+        goal.classList.remove('hidden');
+      }, 10);
+      window.setTimeout(function() {
         if(counter==12) {
           if(success==12) {
             showvideo();
@@ -261,12 +292,10 @@
             init();
           }
         } else {
-          document.querySelector('.loader').classList.add('moving');
-          window.setTimeout(function() {
-            question();
-          }, 1000);
+          question();
         }
-        return false;
+      }, 1000);
+      return false;
     };
 
     document.querySelector('.answer').onkeypress = function(e){
