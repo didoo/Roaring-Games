@@ -146,7 +146,7 @@
 
   .results li {
     position: relative;
-    flex: 0 0 8.3%;
+    flex: 0 0 9%;
     margin: 20px 0;
     font-size: 12px;
     counter-increment: goal-counter;
@@ -230,22 +230,29 @@
     <input class="start" type="button" value="🏁" />
   </div>
   <script>
+    var mode;
     var number1;
     var number2;
     var counter;
     var timeout;
 
     var init = function() {
-      counter = 0;
-      success = 0;
-      document.querySelector('.results').innerHTML = '';
-      document.querySelector('.game').classList.remove('welcome','gameover');
-      question();
+        counter = 0;
+        success = 0;
+        mode = (Math.random() < 0.5) ? 'sequence' : 'random';
+        document.querySelector('.results').innerHTML = '';
+        document.querySelector('.game').classList.remove('welcome','gameover');
+        question();
     }
 
     var question = function() {
-        number1 = Math.ceil(Math.random()*11);
-        number2 = Math.ceil(Math.random()*11);
+        if(mode==='sequence') {
+            number1 = counter + 1;
+            number2 = (counter == 0) ? Math.ceil(Math.random()*11) : number2;
+        } else {
+            number1 = Math.ceil(Math.random()*11);
+            number2 = Math.ceil(Math.random()*11);
+        }
         document.querySelector('.loader').classList.remove('moving');
         document.querySelector('.question').innerText = number1 + ' × ' + number2;
         document.querySelector('.answer').value = '';
@@ -305,8 +312,8 @@
         goal.classList.remove('hidden');
       }, 10);
       window.setTimeout(function() {
-        if(counter==12) {
-          if(success>=11) {
+        if(counter==11) {
+          if(success>=10) {
             showgood();
           } else {
             showbad();
