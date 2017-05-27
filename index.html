@@ -259,8 +259,17 @@
         document.querySelector('.results').innerHTML = '';
         document.querySelector('.game').classList.remove('welcome','gameover');
         var archiveObject = localStorage.getItem('archive');
-        archive = archiveObject ? JSON.parse(archiveObject) : {};
-        console.log('retrievedObject: ', archiveObject, archive);
+        if(archiveObject) {
+            archive = JSON.parse(archiveObject);
+        } else {
+            archive = {};
+            for(var i=1; i<=11; i++) {
+                for(var j=1; j<=11; j++) {
+                    archive[i + '×' + j] = 0;
+                }
+            }
+        }
+        // console.log('retrievedObject: ', archiveObject, archive);
         question();
     }
 
@@ -344,14 +353,14 @@
       }, pass ? 500 : 5000);
     }
 
-    var store = function(success) {
+    var store = function() {
         var current = archive[number1 + '×' + number2];
         if(success) {
-            updated = (current > 0) ? current-- : 0;
+            current--;
         } else {
-            updated = (current > 0) ? current++ : 1;
+            current++;
         }
-        archive[number1 + '×' + number2] = updated;
+        archive[number1 + '×' + number2] = current;
         localStorage.setItem('archive', JSON.stringify(archive));
     }
 
