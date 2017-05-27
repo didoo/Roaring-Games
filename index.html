@@ -74,6 +74,11 @@
     border: none;
   }
 
+  .error .answer {
+    color: #fff;
+    background-color: #e8261b;
+  }
+
   .check {
     flex: 0 0 12vw;
     padding-left: 2vw;
@@ -111,7 +116,7 @@
         transform: translate3d(-5%,0,0);
       }
       100% {
-        transform: translate3d(100%,0,0);
+        transform: translate3d(105%,0,0);
       }
   }
 
@@ -131,7 +136,7 @@
 
   .loader.moving {
     visibility: visible;
-    animation: turtlemove 10s linear forwards;
+    animation: turtlemove 15s linear forwards;
   }
 
   .results {
@@ -253,11 +258,13 @@
             number1 = Math.ceil(Math.random()*11);
             number2 = Math.ceil(Math.random()*11);
         }
+        document.querySelector('body').classList.remove('error');
         document.querySelector('.loader').classList.remove('moving');
         document.querySelector('.question').innerText = number1 + ' × ' + number2;
         document.querySelector('.answer').value = '';
         document.querySelector('.answer').readOnly = false;
         document.querySelector('.answer').focus();
+        document.querySelector('.check').value = "🤔";
         document.querySelector('.loader').classList.add('moving');
         timeout = setTimeout(function() {
           document.querySelector('.check').click();
@@ -274,7 +281,6 @@
       request.onload = function() {
           if (request.status >= 200 && request.status < 400){
               data = JSON.parse(request.responseText).data.image_url;
-              console.log(data);
               document.querySelector('.catgif').src = data;
           } else {
               console.log('reached giphy, but API returned an error');
@@ -304,8 +310,12 @@
       if(pass) {
         success++;
         goal.innerHTML = '<span>🐯<span>';
+        document.querySelector('.check').value = "👍";
       } else {
         goal.innerHTML = '<span>☠<span>';
+        document.querySelector('.check').value = "👎";
+        document.querySelector('.answer').value = number1*number2;
+        document.querySelector('body').classList.add('error');
       }
       document.querySelector('.results').appendChild(goal);
       window.setTimeout(function() {
@@ -322,7 +332,7 @@
         } else {
           question();
         }
-      }, pass ? 10 : 2000);
+      }, pass ? 10 : 5000);
       return false;
     };
 
