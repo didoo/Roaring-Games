@@ -278,6 +278,7 @@
     }
 
     var question = function() {
+        pass = undefined;
         if(mode==='sequence') {
             number1 = counter + 1;
             number2 = (counter == 0) ? Math.ceil(Math.random()*11) : number2;
@@ -301,8 +302,8 @@
         document.querySelector('.check').value = "🚀";
         document.querySelector('.loader').classList.add('moving');
         timeout = setTimeout(function() {
-          document.querySelector('.check').click();
-          clearTimeout(timeout);
+            test();
+            clearTimeout(timeout);
         }, 15000);
     }
 
@@ -364,12 +365,14 @@
         localStorage.setItem('archive', JSON.stringify(archive));
     }
 
-    var test = function() {
+    var test = function(e) {
+      if(pass !== undefined) return;
+      response = document.querySelector('.answer').value;
+      if(e !== undefined && response == "") return;
       counter++;
-      clearTimeout(timeout);
       document.querySelector('.loader').classList.remove('moving');
       document.querySelector('.answer').readOnly = true;
-      response = document.querySelector('.answer').value;
+      clearTimeout(timeout);
       var goal = document.createElement('li');
       goal.classList.add('hidden');
       pass = (response == number1*number2);
@@ -394,7 +397,7 @@
 
     document.querySelector('.answer').onkeypress = function(e){
       if (e.keyCode == '13') {
-        test();
+        test(e);
       }
     }
 
