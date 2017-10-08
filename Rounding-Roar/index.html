@@ -238,7 +238,7 @@
         <img class="catgif" src="" alt="" />
       </div>
       <div class="bad">
-        <img src="http://applenapps.com/wp-content/uploads/2013/06/dumb_ways_to_die2.jpg" alt="">
+        <img src="https://applenapps.com/wp-content/uploads/2013/06/dumb_ways_to_die2.jpg" alt="">
       </div>
     </div>
     <input class="start" type="button" value="🏁" />
@@ -291,7 +291,7 @@
       document.querySelector('.prize').className = 'prize is-good';
 
       request = new XMLHttpRequest;
-      request.open('GET', 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny+cat', true);
+      request.open('GET', 'https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny+cat', true);
 
       request.onload = function() {
           if (request.status >= 200 && request.status < 400){
