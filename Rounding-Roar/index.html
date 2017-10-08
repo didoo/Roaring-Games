@@ -258,8 +258,6 @@
     var init = function() {
         counter = 0;
         success = 0;
-        mode = randArray(modes);
-        decimal = randArray(decimals);
         document.querySelector('.results').innerHTML = '';
         document.querySelector('.game').classList.remove('welcome','gameover');
         question();
@@ -271,6 +269,8 @@
 
     var question = function() {
         pass = undefined;
+        mode = randArray(modes);
+        decimal = randArray(decimals);
         number = Math.ceil(Math.random()*100) * decimal + Math.ceil(Math.random()*decimal);
         document.querySelector('.question').innerText = mode + ' multiple of ' + decimal + ' 🤔';
         document.querySelector('body').classList.remove('error');
