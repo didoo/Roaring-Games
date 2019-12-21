@@ -12,14 +12,14 @@
             font-family: Mathlete-Bulky, sans;
             text-align: center;
             color: white;
-            background: #232427;
+            background: #00BCD4;
         }
         h1 {
             margin: 2vw auto 6vw;
             font-size: 10vw;
             font-weight: normal;
             line-height: 1em;
-            color: #27d400;
+            color: #b600ff;
         }
 
         h1 span {
@@ -77,6 +77,11 @@
             border: none;
         }
 
+        .answer::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            opacity: 1;
+        }
+
         .error .answer {
             color: #fff;
             background-color: #e8261b;
@@ -98,7 +103,7 @@
             width: 100%;
             display: block;
             overflow: hidden;
-            border: 3px solid #27d400;
+            border: 3px solid #03A9F4;
         }
 
         .game.welcome .statusbar {
@@ -130,7 +135,7 @@
             width: 40px;
             height: 40px;
             margin: auto;
-            content: '🐆';
+            content: '🦝';
             display: block;
             transform: scaleX(-1);
             font-size: 6vw;
@@ -215,14 +220,14 @@
     </style>
 </head>
 <body>
-    <h1>🦁 <span>Rounding Roar</span> 🦁</h1>
+    <h1>🥔 <span>Potato Percentages</span> 🥔</h1>
     <div class="game welcome">
         <div class="question"></div>
         <div class="rounding">
             <div class="number">?????</div>
             <div class="equal">➡️</div>
-            <input class="answer" type="number" value="" />
-            <input class="check" type="button" value="👍" />
+            <input class="answer" type="text" value="" />
+            <input class="check" type="button" value="🍟" />
         </div>
         <div class="statusbar">
             <div class="loader"></div>
@@ -233,24 +238,22 @@
                 <img class="catgif" src="" alt="" />
             </div>
             <div class="bad">
-                <img src="../img/dumb_die3.png" alt="">
+                <img src="../img/dumb_die1.png" alt="">
             </div>
         </div>
-        <input class="start" type="button" value="🏁" />
+        <input class="start" type="button" value="🛰" />
     </div>
 
     <script src="../js/scripts.js"></script>
     <script>
-        var modes = ['lowest', 'highest', 'nearest']
-        // var decimals = [10, 100, 1000];
-        var decimals = [10];
-        var mode;
-        var decimal;
+        var modes = ['decimal', 'percentage', 'fraction']
+        var conversion;
         var number;
-        var counter;
         var pass;
         var timeout;
         var archive;
+        var from_text;
+        var from_value;
 
         var start = function() {
             init();
@@ -259,34 +262,62 @@
 
         var question = function() {
             pass = undefined;
-            mode = randArray(modes);
-            decimal = randArray(decimals);
-            number = Math.ceil(Math.random()*100) * decimal + Math.ceil(Math.random()*decimal);
-            document.querySelector('.question').innerText = mode + ' multiple of ' + decimal + ' 🤔';
+            convert_from = randArray(modes);
+            convert_to = randArray(modes.filter(mode => mode !== convert_from));
+            // convert_from = 'decimal';
+            // convert_to = 'fraction';
+            if (convert_from === 'fraction') {
+                var fractions = [
+                    ['1/2', 0.5],
+                    ['1/3', 0.333],
+                    ['2/3', 0.666],
+                    ['1/4', 0.25],
+                    ['2/4', 0.5],
+                    ['3/4', 0.75],
+                    ['1/5', 0.2],
+                    ['2/5', 0.4],
+                    ['3/5', 0.6],
+                    ['4/5', 0.8],
+                ];
+                fraction = randArray(fractions);
+                from_text = fraction[0];
+                from_value = fraction[1];
+            } else if (convert_from === 'decimal') {
+                if (Math.random() > 0.6) {
+                    from_value = Math.random().toFixed(2);
+                } else {
+                    from_value = Math.random().toFixed(1);
+                }
+                from_text = from_value.toString();
+            } else if (convert_from === 'percentage') {
+                if (Math.random() > 0.8) {
+                    from_value = Math.random().toFixed(2) * 100;
+                } else {
+                    var percentages = [10,20,25,30,40,50,60,75,80,90,100];
+                    from_value = randArray(percentages);
+                }
+                from_text = `${from_value}%`;
+            }
+            if (convert_to === 'fraction') {
+                document.querySelector('.answer').setAttribute('placeholder','x/y')
+            } else if (convert_to === 'decimal') {
+                document.querySelector('.answer').setAttribute('placeholder','0.x')
+            } else if (convert_to === 'percentage') {
+                document.querySelector('.answer').setAttribute('placeholder','xx%')
+            }
+            document.querySelector('.question').innerText = `convert ${convert_from} to ${convert_to} 🤔`;
             document.querySelector('body').classList.remove('error');
             document.querySelector('.loader').classList.remove('moving');
-            document.querySelector('.number').innerText = number;
+            document.querySelector('.number').innerText = from_text;
             document.querySelector('.answer').value = '';
             document.querySelector('.answer').readOnly = false;
             document.querySelector('.answer').focus();
-            document.querySelector('.check').value = "🐯";
+            document.querySelector('.check').value = "🍟";
             document.querySelector('.loader').classList.add('moving');
             timeout = setTimeout(function() {
                 test();
                 clearTimeout(timeout);
             }, 15000);
-        }
-
-        var getRoundedNumber = function(num, dec) {
-            var rounded;
-            if(mode==='lowest') {
-                rounded = Math.floor(num / dec) * dec;
-            } else if(mode==='highest') {
-                rounded = Math.ceil(num / dec) * dec;
-            } else if(mode==='nearest') {
-                rounded = Math.round(num / dec) * dec;
-            }
-            return rounded;
         }
 
         var test = function(e) {
@@ -299,17 +330,39 @@
             clearTimeout(timeout);
             var goal = document.createElement('li');
             goal.classList.add('hidden');
-            correct = getRoundedNumber(number, decimal);
+
+            if (convert_from === 'fraction') {
+                if (convert_to === 'decimal') {
+                    correct = from_value;
+                }
+                if (convert_to === 'percentage') {
+                    correct = `${from_value * 100}%`;
+                }
+            } else if (convert_from === 'decimal') {
+                if (convert_to === 'fraction') {
+                    correct = reduceFraction(`${from_value * 100}/100`);
+                }
+                if (convert_to === 'percentage') {
+                    correct = `${from_value * 100}%`;
+                }
+            } else if (convert_from === 'percentage') {
+                if (convert_to === 'fraction') {
+                    correct = reduceFraction(`${from_value}/100`);
+                }
+                if (convert_to === 'decimal') {
+                    correct = `${from_value / 100}`;
+                }
+            }
             pass = (response == correct);
             if(pass) {
                 success++;
-                goal.innerHTML = '<span>🐯<span>';
+                goal.innerHTML = '<span>🧁<span>';
                 document.querySelector('.check').value = "👍";
             } else {
-                goal.innerHTML = '<span>☠<span>';
-                    document.querySelector('.check').value = "👎";
-                    document.querySelector('.answer').value = correct;
-                    document.querySelector('body').classList.add('error');
+                goal.innerHTML = '<span>👻<span>';
+                document.querySelector('.check').value = "👎";
+                document.querySelector('.answer').value = correct;
+                document.querySelector('body').classList.add('error');
             }
             document.querySelector('.results').appendChild(goal);
             window.setTimeout(function() {
