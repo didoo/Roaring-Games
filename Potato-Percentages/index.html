@@ -195,7 +195,7 @@
         }
 
         .prize .bad img {
-            width: 40vw;
+            height: 25vh;
         }
 
         .prize .good, .prize .bad { display: none; }
@@ -224,7 +224,7 @@
         <div class="question"></div>
         <div class="conversion">
             <div class="number">?????</div>
-            <div class="equal">➡️</div>
+            <div class="equal">☞</div>
             <input class="answer" type="text" value="" />
             <input class="check" type="button" value="🍟" />
         </div>
@@ -263,8 +263,6 @@
             pass = undefined;
             convert_from = randArray(modes);
             convert_to = randArray(modes.filter(mode => mode !== convert_from));
-            convert_from = 'fraction';
-            convert_to = 'percentage';
             if (convert_from === 'fraction') {
                 var fractions = [
                     ['1/2', 0.5],
@@ -277,7 +275,7 @@
                     ['2/5', 0.4],
                     ['3/5', 0.6],
                     ['4/5', 0.8],
-                    ['1/8', 0.8],
+                    ['1/8', 0.125],
                     ['1/10', 0.1],
                 ];
                 fraction = randArray(fractions);
