@@ -128,6 +128,7 @@
 
         @keyframes loadermove {
             0% {
+
                 transform: translate3d(-5%,0,0);
             }
             100% {
@@ -139,7 +140,7 @@
             display: block;
             font-size: 6vw;
             line-height: 1em;
-            content: '🦝';
+            content:'🦌';
             transform: scaleX(-1);
         }
 
@@ -177,8 +178,18 @@
         }
 
         .results li span {
+            position: relative;
             display: block;
             font-size: 4vw;
+        }
+
+        .results li span > em {
+            position: absolute;
+            top: 0.2vw;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2vw;
+            font-style: normal;
         }
 
         .results li.hidden {
@@ -240,7 +251,7 @@
                 <img src="../img/dumb_die1.png" alt="">
             </div>
         </div>
-        <input class="start" type="button" value="🏳️‍🌈" />
+        <input class="start" type="button" value="🇨🇮" />
     </div>
 
     <script src="../js/scripts.js"></script>
@@ -304,7 +315,7 @@
             } else if (convert_to === 'percentage') {
                 document.querySelector('.answer').setAttribute('placeholder','xx%')
             }
-            document.querySelector('.question').innerText = `convert ${convert_from} to ${convert_to} 🤔`;
+            document.querySelector('.question').innerText = `convert ${convert_from} to ${convert_to}🤨 `;
             document.querySelector('body').classList.remove('error');
             document.querySelector('.loader').classList.remove('moving');
             document.querySelector('.number').innerText = from_text;
@@ -355,7 +366,7 @@
             pass = (response == correct);
             if(pass) {
                 success++;
-                goal.innerHTML = '<span>🧁<span>';
+                goal.innerHTML = '<span>🧁<em>👀</em><span>';
                 document.querySelector('.check').value = "🤩";
             } else {
                 goal.innerHTML = '<span>👻<span>';
